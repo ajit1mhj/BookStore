@@ -1,0 +1,83 @@
+﻿@model BookDisplayModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-4">
+    <form asp-action="Index" class="row row-cols-1 row-cols-md-auto g-3 align-items-center">
+        <div class="col">
+            <label class="visually-hidden" for="genreId">Genre</label>
+            <select class="form-select" id="genreId" name="genreId">
+                <option selected disabled>Choose Genre</option>
+                @foreach (var genre in Model.Genres)
+                {
+                    <option value="@genre.Id">@genre.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <label class="visually-hidden" for="sterm">Search by Title</label>
+            <input type="text" class="form-control" id="sterm" name="sterm" value="@Model.sTerm" placeholder="Search by Title" />
+        </div>
+
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="/Home/Index" class="btn btn-outline-secondary ms-2">Reset</a>
+        </div>
+    </form>
+
+    <div class="row mt-5">
+        @foreach (var book in Model.Books)
+        {
+            <div class="col-md-4 col-lg-3 d-flex align-items-stretch mb-4">
+                <div class="card shadow-sm w-100">
+                    @* Keep your original image logic *@
+                    @if (string.IsNullOrEmpty(book.Image))
+                    {
+                        <img src="~/images/2.jpg" class="card-img-top" alt="">
+                    }
+                    else
+                    {
+                        <img src="/images/@book.Image" class="card-img-top" alt="">
+                    }
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@book.BookName</h5>
+                        <p class="card-text mb-3">
+                            <strong>Genre:</strong> @book.GenreName<br />
+                            <strong>Author:</strong> @book.AuthorName<br />
+                            <strong>Price:</strong> Rs. @book.Price
+                        </p>
+                        <button type="button" onclick="add(@book.Id)" class="btn btn-primary mt-auto">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function add(bookId) {
+            var usernameEl = document.getElementById("username");
+
+            if (usernameEl == null) {
+                window.location.href = "/Identity/Account/Login";
+                return;
+            }
+
+            try {
+                var response = await fetch(`/Cart/AddItem?bookId=${bookId}`);
+                if (response.status === 200) {
+                    var result = await response.json();
+                    var cartCountEl = document.getElementById("cartCount");
+                    cartCountEl.innerHTML = result;
+                    window.location.href = "#cartCount";
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    </script>
+}

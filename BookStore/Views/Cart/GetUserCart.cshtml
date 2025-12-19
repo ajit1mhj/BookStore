@@ -1,0 +1,63 @@
+﻿@model ShoppingCart
+@{
+    ViewData["Title"] = "My Cart";
+}
+
+<div class="container my-5">
+    @if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
+    {
+        <h2 class="text-center mb-4">🛒 My Shopping Cart</h2>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Book</th>
+                        <th>Image</th>
+                        <th>Genre</th>
+                        <th>Unit Price (NPR)</th>
+                        <th>Qty</th>
+                        <th>Total Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartDetails)
+                    {
+                        <tr>
+                            <td>@item.Book.BookName</td>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(item.Book.Image) ? "~/images/no images.jpg" : $"/images/{item.Book.Image}")"
+                                     class="img-thumbnail" style="width:80px; height:100px;" alt="Book Image" />
+                            </td>
+                            <td>@item.Book.Genre.Name</td>
+                            <td>@item.Book.Price.ToString("N2")</td>
+                            <td>@item.Quantity</td>
+                            <td>@(item.Book.Price * item.Quantity)</td>
+                            <td>
+                                <a class="btn btn-success btn-sm me-1" href="/Cart/AddItem?bookId=@item.BookId&redirect=1">+</a>
+                                <a class="btn btn-danger btn-sm" href="/Cart/removeitem?bookid=@item.BookId">−</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total (NPR): 
+                <span class="text-success fw-bold">
+                    @Model.CartDetails.Sum(item => item.Book.Price * item.Quantity).ToString("N2")
+                </span>
+            </h4>
+            <a class="btn btn-primary btn-lg" href="/Cart/Checkout">Proceed to Checkout</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center my-5">
+            <h4>Your cart is currently empty 🛒</h4>
+            <a class="btn btn-outline-primary mt-3" href="/Books">Browse Books</a>
+        </div>
+    }
+</div>

@@ -1,0 +1,73 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">@ViewData["Title"]</h2>
+
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control" placeholder="name@example.com" autocomplete="username" aria-required="true" />
+                            <label asp-for="Input.Email">Email</label>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" class="form-control" placeholder="password" autocomplete="new-password" aria-required="true" />
+                            <label asp-for="Input.Password">Password</label>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="confirm password" autocomplete="new-password" aria-required="true" />
+                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="card shadow mt-4 rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="text-center mb-3">Use another service to register</h5>
+                        <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="text-center">
+                            @foreach (var provider in Model.ExternalLogins!)
+                            {
+                                <button type="submit" class="btn btn-outline-secondary w-100 mb-2" name="provider" value="@provider.Name">
+                                    Register with @provider.DisplayName
+                                </button>
+                            }
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">
+                    <p>
+                        There are no external authentication services configured.
+                        See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715" target="_blank">guide</a>.
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
