@@ -18,30 +18,36 @@ namespace BookStore.Repositories
 
         public async Task<IEnumerable<Book>> GetBooks(string sTerm = "", int genreId = 0)
         {
-            sTerm = sTerm.ToLower();
+            sTerm = sTerm?.Trim().ToLower();
 
-            var query = from book in _db.Books
-                        join genre in _db.Genres on book.GenreId equals genre.Id
-                        where (string.IsNullOrWhiteSpace(sTerm) || book.BookName.ToLower().StartsWith(sTerm))
-                        select new Book
-                        {
-                            Id = book.Id,
-                            Image = book.Image,
-                            AuthorName = book.AuthorName,
-                            BookName = book.BookName,
-                            GenreId = book.GenreId,
-                            Price = book.Price,
-                            GenreName = genre.Name
-                        };
-
-            var books = await query.ToListAsync();
+            var query =
+                from book in _db.Books
+                join genre in _db.Genres
+                    on book.GenreId equals genre.Id
+                join stock in _db.Stocks
+                    on book.Id equals stock.BookId into bookStocks
+                from bookWithStock in bookStocks.DefaultIfEmpty()
+                where (string.IsNullOrWhiteSpace(sTerm)
+                       || EF.Functions.Like(book.BookName.ToLower(), sTerm + "%"))
+                select new Book
+                {
+                    Id = book.Id,
+                    Image = book.Image,
+                    AuthorName = book.AuthorName,
+                    BookName = book.BookName,
+                    GenreId = book.GenreId,
+                    Price = book.Price,
+                    GenreName = genre.Name,
+                    Quantity = bookWithStock == null ? 0 : bookWithStock.Quantity
+                };
 
             if (genreId > 0)
             {
-                books = books.Where(a => a.GenreId == genreId).ToList();
+                query = query.Where(b => b.GenreId == genreId);
             }
 
-            return books;
+            return await query.ToListAsync();
         }
+
     }
 }

@@ -102,6 +102,7 @@ namespace BookStore.Repositories
             var shoppingCart = await _db.ShoppingCarts
                                   .Include(a => a.CartDetails)
                                   .ThenInclude(a => a.Book)
+                                  .ThenInclude(a => a.Stock)
                                   .Include(a => a.CartDetails)
                                   .ThenInclude(a => a.Book)
                                   .ThenInclude(a => a.Genre)
@@ -175,11 +176,20 @@ namespace BookStore.Repositories
                     };
                     _db.OrderDetails.Add(orderDetail);
 
-
-
+                    //update stock
+                    var stock = await _db.Stocks.FirstOrDefaultAsync(s => s.BookId == item.BookId);
+                    if (stock == null)
+                    {
+                        throw new InvalidOperationException("Stock is null");
+                    }
+                    if (stock.Quantity < item.Quantity)
+                    {
+                        throw new InvalidOperationException($"only {stock.Quantity} items are available in the stock");
+                    }
+                    stock.Quantity -= item.Quantity;
                 }
                 _db.CartDetails.RemoveRange(cartDetail);
-                _db.SaveChanges();
+                //_db.SaveChanges();
                 transaction.Commit();
                 return true;
             }

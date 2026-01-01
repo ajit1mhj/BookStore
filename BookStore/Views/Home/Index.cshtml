@@ -47,9 +47,18 @@
                         <p class="card-text mb-3">
                             <strong>Genre:</strong> @book.GenreName<br />
                             <strong>Author:</strong> @book.AuthorName<br />
-                            <strong>Price:</strong> Rs. @book.Price
+                            <strong>Price:</strong> Rs. @book.Price <br />
+                            
                         </p>
-                        <button type="button" onclick="add(@book.Id)" class="btn btn-primary mt-auto">Add to Cart</button>
+                        @if (book.Quantity >0)
+                        {
+                            <button type="button" onclick="add(@book.Id)" class="btn btn-primary mt-auto">Add to Cart</button>
+                        }
+                        else
+                        {
+                            <span style="border:1px solid;padding:5px 8px;color:red;border-radius:5px">Out of Stock</span>
+                        }
+    
                     </div>
                 </div>
             </div>

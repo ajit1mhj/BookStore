@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-
 namespace BookShoppingCartMvcUI.Controllers;
 
 [Authorize(Roles = nameof(Roles.Admin))]
