@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BookStore.Data;
 using BookStore;
 using BookStore.Repositories;
+using BookStore.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -21,6 +22,8 @@ builder.Services.AddTransient<ICartRepository, CartRepository>();
 builder.Services.AddTransient<IUserOrderRepository, UserOrderRepository>();
 builder.Services.AddTransient<IStockRepository, StockRepository>();
 builder.Services.AddTransient<IGenreRepository, GenreRepositry>();
+builder.Services.AddTransient<IBookRepository, BookRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
 var app = builder.Build();
 
 using(var scope = app.Services.CreateScope())
